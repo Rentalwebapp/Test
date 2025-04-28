@@ -25,11 +25,8 @@ SECRET_KEY = 'ax8srk7vc)^fvb^m$mji*+u(c&g26+yt#hpt&41t*yj75idnq!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'sai123-erdmd8e0d8cpbhbh.eastus-01.azurewebsites.net',
-    'sai123-erdmd8e0d8cpbhbh.eastus.azurewebsites.net',
-    '127.0.0.1',  # (optional for local testing too)
-]
+ALLOWED_HOSTS = ['sai123-erdmd8e0d8cpbhbh.eastus-01.azurewebsites.net']
+
 
 
 # Application definition
