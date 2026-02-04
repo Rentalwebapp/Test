@@ -1,0 +1,75 @@
+trigger:
+  branches:
+    include:
+      - work
+
+variables:
+  pythonVersion: '3.11'
+  vmServiceConnection: 'azure-vm-ssh'
+  vmHost: 'YOUR_VM_PUBLIC_IP'
+  vmUser: 'azureuser'
+  appPath: '/var/www/valentine-app'
+
+stages:
+  - stage: Build
+    displayName: Build and package
+    jobs:
+      - job: Build
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '$(pythonVersion)'
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt
+              python manage.py collectstatic --noinput
+            displayName: Install dependencies and collect static
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(Build.SourcesDirectory)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+          - publish: '$(Build.ArtifactStagingDirectory)/app.zip'
+            artifact: drop
+
+  - stage: Deploy
+    displayName: Deploy to Azure VM
+    dependsOn: Build
+    jobs:
+      - deployment: Deploy
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop
+                - task: SSH@0
+                  inputs:
+                    sshEndpoint: '$(vmServiceConnection)'
+                    runOptions: inline
+                    inline: |
+                      sudo mkdir -p $(appPath)
+                      sudo chown -R $(vmUser):$(vmUser) $(appPath)
+                - task: CopyFilesOverSSH@0
+                  inputs:
+                    sshEndpoint: '$(vmServiceConnection)'
+                    sourceFolder: '$(Pipeline.Workspace)/drop'
+                    contents: 'app.zip'
+                    targetFolder: '$(appPath)'
+                - task: SSH@0
+                  inputs:
+                    sshEndpoint: '$(vmServiceConnection)'
+                    runOptions: inline
+                    inline: |
+                      cd $(appPath)
+                      unzip -o app.zip
+                      python -m venv venv
+                      . venv/bin/activate
+                      pip install -r requirements.txt
+                      python manage.py migrate
+                      python manage.py collectstatic --noinput
+                      sudo systemctl restart valentine.service
