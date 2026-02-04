@@ -102,6 +102,9 @@ def detail1(request,dist):
 def Contact(request):
     return render(request,'contact.html')
 
+def Valentine(request):
+    return render(request, 'valentine.html')
+
 def rent1(request):
     if not request.user.is_authenticated:
         return redirect('home')

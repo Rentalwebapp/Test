@@ -29,6 +29,7 @@ urlpatterns = [
     path('logout', Logout,name='logout'),
     path('search', Search,name='search'),
     path('contact', Contact,name='contact'),
+    path('valentine', Valentine, name='valentine'),
     path('about', About,name='about'),
     path('view_user', View_User,name='view_user'),
     path('rent1', rent1,name='rent1'),
