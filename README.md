@@ -1,3 +1,11 @@
 # Django-Home
 It is to help the student to find rent house easily. 
 It is to help the student to find rent house easily. This system will show the available house to rent and make comparison to help the student in making the choice. if a student reserved a home online without getting in touch with the owner within 24 hours, the system will automatically unbook that specific residence. It is to help the student to find rent house easily. This system will show the available house to rent and make comparison to help the student in making the choice. if a student reserved a home online without getting in touch with the owner within 24 hours, the system will automatically unbook that specific residence.
+
+## Demo Webapp
+
+The repository now includes a small demo Flask application located in `demoapp/`.
+It exposes a single route returning a friendly greeting and is used to
+demonstrate a simple CI/CD pipeline. The workflow defined in
+`.github/workflows/ci-cd.yml` installs the demo dependencies, runs the tests in
+`tests/`, builds a Docker image and publishes it to the GitHub Container Registry.
